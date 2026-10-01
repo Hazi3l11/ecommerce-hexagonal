@@ -1,3 +1,6 @@
 node_modules/
 .env
 dist/
+
+labsuser.pem
+datos-examen.sql
