@@ -7,6 +7,7 @@ import RegisterForm from './modules/auth/RegisterForm';
 import ProductoList from './modules/productos/ProductoList';
 import PedidoList from './modules/pedidos/PedidoList';
 import UsuariosAdmin from './modules/usuarios/UsuariosAdmin';
+import Checkout from './modules/pedidos/Checkout';
 
 function App() {
   return (
@@ -15,6 +16,7 @@ function App() {
         <Routes>
           <Route path="/login" element={<LoginForm />} />
           <Route path="/registro" element={<RegisterForm />} />
+          <Route path="/checkout" element={<Checkout />} />
 
           <Route element={<DashboardLayout />}>
             <Route path="/productos" element={
@@ -34,5 +36,6 @@ function App() {
     </BrowserRouter>
   );
 }
+
 
 export default App;

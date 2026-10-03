@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
-
+const PgUsuarioRepository = require('../repositories/PgUsuarioRepository');
+const NodemailAdapter = require('../email/NodemailAdapter');
 const PgPedidoRepository = require('../repositories/PgPedidoRepository');
 const PgProductoRepository = require('../repositories/PgProductoRepository');
 const CrearPedido = require('../../../application/usecases/pedido/CrearPedido');
@@ -12,13 +13,18 @@ const { requiereAcceso } = require('../../middleware/permisoMiddleware');
 
 const pedidoRepository = new PgPedidoRepository();
 const productoRepository = new PgProductoRepository();
+const usuarioRepository = new PgUsuarioRepository();
+const emailService = new NodemailAdapter();
 
 router.use(verificarToken, requiereAcceso('pedidos'));
 
 router.post('/', async (req, res) => {
   try {
-    const usecase = new CrearPedido(pedidoRepository, productoRepository);
-    const pedido = await usecase.ejecutar(req.body);
+    const usecase = new CrearPedido(pedidoRepository, productoRepository, usuarioRepository, emailService);
+    const pedido = await usecase.ejecutar({
+      ...req.body,
+      usuarioId: req.usuario.id,
+    });
     res.status(201).json(pedido);
   } catch (err) {
     res.status(400).json({ error: err.message });

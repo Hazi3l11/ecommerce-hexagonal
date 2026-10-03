@@ -8,6 +8,13 @@ const estadoBadge = {
   cancelado: 'bg-red-50 text-red-700',
 };
 
+const estadoTexto = {
+  pendiente: 'Pendiente de Pago',
+  pagado: 'Pagado',
+  enviado: 'Enviado',
+  cancelado: 'Cancelado',
+};
+
 export default function PedidoList() {
   const [pedidos, setPedidos] = useState([]);
 
@@ -46,7 +53,7 @@ export default function PedidoList() {
                 <td className="px-5 py-3 font-medium text-slate-800">${p.total}</td>
                 <td className="px-5 py-3">
                   <span className={`text-xs font-medium px-2 py-1 rounded-full ${estadoBadge[p.estado]}`}>
-                    {p.estado}
+                    {estadoTexto[p.estado] || p.estado}
                   </span>
                 </td>
                 <td className="px-5 py-3 text-slate-500">{new Date(p.creado_en).toLocaleDateString()}</td>

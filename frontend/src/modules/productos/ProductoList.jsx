@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { listarProductos, eliminarProducto } from '../../services/productoService';
 import { useAuth } from '../../context/AuthContext';
 import ProductoForm from './ProductoForm';
+import { useNavigate } from 'react-router-dom';
 
 export default function ProductoList() {
   const [productos, setProductos] = useState([]);
@@ -19,6 +20,52 @@ export default function ProductoList() {
     await eliminarProducto(id);
     cargar();
   };
+
+  const navigate = useNavigate();
+
+  const agregarAlCarrito = (producto) => {
+  const carrito = JSON.parse(
+    localStorage.getItem('carrito') || '[]'
+  );
+
+  const existente = carrito.find(
+    (item) => item.id === producto.id
+  );
+
+  let nuevoCarrito;
+
+  if (existente) {
+    nuevoCarrito = carrito.map((item) =>
+      item.id === producto.id
+        ? {
+            ...item,
+            cantidad: Math.min(
+              item.cantidad + 1,
+              item.stock
+            ),
+          }
+        : item
+    );
+  } else {
+    nuevoCarrito = [
+      ...carrito,
+      {
+        id: producto.id,
+        nombre: producto.nombre,
+        precio: Number(producto.precio),
+        stock: producto.stock,
+        cantidad: 1,
+      },
+    ];
+  }
+
+  localStorage.setItem(
+    'carrito',
+    JSON.stringify(nuevoCarrito)
+  );
+
+  navigate('/checkout');
+};
 
   return (
     <div>
@@ -55,7 +102,10 @@ export default function ProductoList() {
             <p className="text-sm text-slate-500 mb-3 line-clamp-2">{p.descripcion}</p>
             <p className="text-lg font-semibold text-brand-600 mb-4">${p.precio}</p>
             <div className="flex gap-2">
-              <button className="flex-1 bg-brand-500 hover:bg-brand-600 text-white text-sm font-medium py-2 rounded-lg transition">
+              <button
+                onClick={() => agregarAlCarrito(p)}
+                className="flex-1 bg-brand-500 hover:bg-brand-600 text-white text-sm font-medium py-2 rounded-lg transition"
+                >
                 Agregar
               </button>
               {usuario?.rol === 'admin' && (
